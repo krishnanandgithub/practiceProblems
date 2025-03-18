@@ -1,0 +1,21 @@
+{
+  "scriptId": "319",
+  "url": "file:///Users/krishnanandmishra/workspace/practice/test-coverage-practice/utils.js",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 104, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "max",
+      "ranges": [{ "startOffset": 44, "endOffset": 63, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "min",
+      "ranges": [{ "startOffset": 84, "endOffset": 103, "count": 0 }],
+      "isBlockCoverage": false
+    }
+  ]
+}

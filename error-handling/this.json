@@ -1,0 +1,601 @@
+Deno,[object Object],queueMicrotask,function queueMicrotask(cb) {
+    if (typeof cb != "function") {
+      throw new TypeError("expected a function");
+    }
+    return op_queue_microtask(() => {
+      try {
+        cb();
+      } catch (error) {
+        reportExceptionCallback(error);
+      }
+    });
+  },atob,function atob(data) {
+  const prefix = "Failed to execute 'atob'";
+  webidl.requiredArguments(arguments.length, 1, prefix);
+  data = webidl.converters.DOMString(data, prefix, "Argument 1");
+  try {
+    return op_base64_atob(data);
+  } catch (e) {
+    if (ObjectPrototypeIsPrototypeOf(TypeErrorPrototype, e)) {
+      throw new DOMException(
+        "Failed to decode base64: invalid character",
+        "InvalidCharacterError",
+      );
+    }
+    throw e;
+  }
+},btoa,function btoa(data) {
+  const prefix = "Failed to execute 'btoa'";
+  webidl.requiredArguments(arguments.length, 1, prefix);
+  data = webidl.converters.DOMString(data, prefix, "Argument 1");
+  try {
+    return op_base64_btoa(data);
+  } catch (e) {
+    if (ObjectPrototypeIsPrototypeOf(TypeErrorPrototype, e)) {
+      throw new DOMException(
+        "The string to be encoded contains characters outside of the Latin1 range.",
+        "InvalidCharacterError",
+      );
+    }
+    throw e;
+  }
+},createImageBitmap,function createImageBitmap(
+  image,
+  sxOrOptions = undefined,
+  sy = undefined,
+  sw = undefined,
+  sh = undefined,
+  options = undefined,
+) {
+  const prefix = "Failed to execute 'createImageBitmap'";
+
+  // Overload: createImageBitmap(image [, options ])
+  if (arguments.length < 3) {
+    options = webidl.converters["ImageBitmapOptions"](
+      sxOrOptions,
+      prefix,
+      "Argument 2",
+    );
+  } else {
+    // Overload: createImageBitmap(image, sx, sy, sw, sh [, options ])
+    sxOrOptions = webidl.converters["long"](sxOrOptions, prefix, "Argument 2");
+    sy = webidl.converters["long"](sy, prefix, "Argument 3");
+    sw = webidl.converters["long"](sw, prefix, "Argument 4");
+    sh = webidl.converters["long"](sh, prefix, "Argument 5");
+    options = webidl.converters["ImageBitmapOptions"](
+      options,
+      prefix,
+      "Argument 6",
+    );
+
+    if (sw === 0) {
+      return PromiseReject(new RangeError("sw has to be greater than 0"));
+    }
+
+    if (sh === 0) {
+      return PromiseReject(new RangeError("sh has to be greater than 0"));
+    }
+  }
+
+  if (options.resizeWidth === 0) {
+    return PromiseReject(
+      new DOMException(
+        "options.resizeWidth has to be greater than 0",
+        "InvalidStateError",
+      ),
+    );
+  }
+  if (options.resizeHeight === 0) {
+    return PromiseReject(
+      new DOMException(
+        "options.resizeWidth has to be greater than 0",
+        "InvalidStateError",
+      ),
+    );
+  }
+
+  const imageBitmap = webidl.createBranded(ImageBitmap);
+
+  if (ObjectPrototypeIsPrototypeOf(ImageDataPrototype, image)) {
+    const processedImage = processImage(
+      image[_data],
+      image[_width],
+      image[_height],
+      sxOrOptions,
+      sy,
+      sw,
+      sh,
+      options,
+    );
+    imageBitmap[_bitmapData] = processedImage.data;
+    imageBitmap[_width] = processedImage.outputWidth;
+    imageBitmap[_height] = processedImage.outputHeight;
+    return PromiseResolve(imageBitmap);
+  }
+  if (ObjectPrototypeIsPrototypeOf(BlobPrototype, image)) {
+    return (async () => {
+      const data = await image.arrayBuffer();
+      const mimetype = sniffImage(image.type);
+      if (mimetype !== "image/png") {
+        throw new DOMException(
+          `Unsupported type '${image.type}'`,
+          "InvalidStateError",
+        );
+      }
+      const { data: imageData, width, height } = op_image_decode_png(
+        new Uint8Array(data),
+      );
+      const processedImage = processImage(
+        imageData,
+        width,
+        height,
+        sxOrOptions,
+        sy,
+        sw,
+        sh,
+        options,
+      );
+      imageBitmap[_bitmapData] = processedImage.data;
+      imageBitmap[_width] = processedImage.outputWidth;
+      imageBitmap[_height] = processedImage.outputHeight;
+      return imageBitmap;
+    })();
+  } else {
+    return PromiseReject(new TypeError("Invalid or unsupported image value"));
+  }
+},caches,[object CacheStorage],crypto,[object Crypto],fetch,function fetch(input, init = { __proto__: null }) {
+  // There is an async dispatch later that causes a stack trace disconnect.
+  // We reconnect it by assigning the result of that dispatch to `opPromise`,
+  // awaiting `opPromise` in an inner function also named `fetch()` and
+  // returning the result from that.
+  let opPromise = undefined;
+  // 1.
+  const result = new Promise((resolve, reject) => {
+    const prefix = "Failed to execute 'fetch'";
+    webidl.requiredArguments(arguments.length, 1, prefix);
+    // 2.
+    const requestObject = new Request(input, init);
+    // 3.
+    const request = toInnerRequest(requestObject);
+    // 4.
+    if (requestObject.signal.aborted) {
+      reject(abortFetch(request, null, requestObject.signal.reason));
+      return;
+    }
+
+    // 7.
+    let responseObject = null;
+    // 9.
+    let locallyAborted = false;
+    // 10.
+    function onabort() {
+      locallyAborted = true;
+      reject(
+        abortFetch(request, responseObject, requestObject.signal.reason),
+      );
+    }
+    requestObject.signal[abortSignal.add](onabort);
+
+    if (!requestObject.headers.has("Accept")) {
+      ArrayPrototypePush(request.headerList, ["Accept", "*/*"]);
+    }
+
+    if (!requestObject.headers.has("Accept-Language")) {
+      ArrayPrototypePush(request.headerList, ["Accept-Language", "*"]);
+    }
+
+    // 12.
+    opPromise = PromisePrototypeCatch(
+      PromisePrototypeThen(
+        mainFetch(request, false, requestObject.signal),
+        (response) => {
+          // 12.1.
+          if (locallyAborted) return;
+          // 12.2.
+          if (response.aborted) {
+            reject(
+              abortFetch(
+                request,
+                responseObject,
+                requestObject.signal.reason,
+              ),
+            );
+            requestObject.signal[abortSignal.remove](onabort);
+            return;
+          }
+          // 12.3.
+          if (response.type === "error") {
+            const err = new TypeError(
+              "Fetch failed: " + (response.error ?? "unknown error"),
+            );
+            reject(err);
+            requestObject.signal[abortSignal.remove](onabort);
+            return;
+          }
+          responseObject = fromInnerResponse(response, "immutable");
+          resolve(responseObject);
+          requestObject.signal[abortSignal.remove](onabort);
+        },
+      ),
+      (err) => {
+        reject(err);
+        requestObject.signal[abortSignal.remove](onabort);
+      },
+    );
+  });
+  if (opPromise) {
+    PromisePrototypeCatch(result, () => {});
+    return (async function fetch() {
+      await opPromise;
+      return result;
+    })();
+  }
+  return result;
+},EventSource,class EventSource extends EventTarget {
+  /** @type {AbortController} */
+  #abortController = new AbortController();
+
+  /** @type {number | undefined} */
+  #reconnectionTimerId;
+
+  /** @type {number} */
+  #reconnectionTime = 5000;
+
+  /** @type {string} */
+  #lastEventId = "";
+
+  /** @type {number} */
+  #readyState = CONNECTING;
+  get readyState() {
+    webidl.assertBranded(this, EventSourcePrototype);
+    return this.#readyState;
+  }
+
+  get CONNECTING() {
+    webidl.assertBranded(this, EventSourcePrototype);
+    return CONNECTING;
+  }
+  get OPEN() {
+    webidl.assertBranded(this, EventSourcePrototype);
+    return OPEN;
+  }
+  get CLOSED() {
+    webidl.assertBranded(this, EventSourcePrototype);
+    return CLOSED;
+  }
+
+  /** @type {string} */
+  #url;
+  get url() {
+    webidl.assertBranded(this, EventSourcePrototype);
+    return this.#url;
+  }
+
+  /** @type {boolean} */
+  #withCredentials;
+  get withCredentials() {
+    webidl.assertBranded(this, EventSourcePrototype);
+    return this.#withCredentials;
+  }
+
+  constructor(url, eventSourceInitDict = { __proto__: null }) {
+    super();
+    this[webidl.brand] = webidl.brand;
+    const prefix = "Failed to construct 'EventSource'";
+    webidl.requiredArguments(arguments.length, 1, prefix);
+    url = webidl.converters.USVString(url, prefix, "Argument 1");
+    eventSourceInitDict = webidl.converters.EventSourceInit(
+      eventSourceInitDict,
+      prefix,
+      "Argument 2",
+    );
+
+    try {
+      url = new URL(url, getLocationHref()).href;
+    } catch (e) {
+      throw new DOMException(e.message, "SyntaxError");
+    }
+
+    this.#url = url;
+    this.#withCredentials = eventSourceInitDict.withCredentials;
+
+    this.#loop();
+  }
+
+  close() {
+    webidl.assertBranded(this, EventSourcePrototype);
+    this.#abortController.abort();
+    this.#readyState = CLOSED;
+    clearTimeout(this.#reconnectionTimerId);
+  }
+
+  async #loop() {
+    const lastEventIdValue = this.#lastEventId;
+    const req = newInnerRequest(
+      "GET",
+      this.#url,
+      () =>
+        lastEventIdValue === ""
+          ? [
+            ["accept", "text/event-stream"],
+          ]
+          : [
+            ["accept", "text/event-stream"],
+            ["Last-Event-Id", op_utf8_to_byte_string(lastEventIdValue)],
+          ],
+      null,
+      false,
+    );
+    /** @type {InnerResponse} */
+    let res;
+    try {
+      res = await mainFetch(req, true, this.#abortController.signal);
+    } catch {
+      this.#reestablishConnection();
+      return;
+    }
+
+    if (res.aborted) {
+      this.#failConnection();
+      return;
+    }
+    if (res.type === "error") {
+      this.#reestablishConnection();
+      return;
+    }
+    const contentType = ArrayPrototypeFind(
+      res.headerList,
+      (header) => StringPrototypeToLowerCase(header[0]) === "content-type",
+    );
+    if (
+      res.status !== 200 ||
+      !contentType ||
+      !StringPrototypeIncludes(
+        StringPrototypeToLowerCase(contentType[1]),
+        "text/event-stream",
+      )
+    ) {
+      this.#failConnection();
+      return;
+    }
+
+    if (this.#readyState === CLOSED) {
+      return;
+    }
+    this.#readyState = OPEN;
+    this.dispatchEvent(new Event("open"));
+
+    let data = "";
+    let eventType = "";
+    let lastEventId = this.#lastEventId;
+
+    try {
+      for await (
+        // deno-lint-ignore prefer-primordials
+        const chunk of res.body.stream
+          .pipeThrough(new TextDecoderStream())
+          .pipeThrough(new TextLineStream({ allowCR: true }))
+      ) {
+        if (chunk === "") {
+          this.#lastEventId = lastEventId;
+          if (data === "") {
+            eventType = "";
+            continue;
+          }
+          if (StringPrototypeEndsWith(data, "\n")) {
+            data = StringPrototypeSlice(data, 0, -1);
+          }
+          const event = new MessageEvent(eventType || "message", {
+            data,
+            origin: res.url(),
+            lastEventId: this.#lastEventId,
+          });
+          setIsTrusted(event, true);
+          data = "";
+          eventType = "";
+          if (this.#readyState !== CLOSED) {
+            this.dispatchEvent(event);
+          }
+        } else if (StringPrototypeStartsWith(chunk, ":")) {
+          continue;
+        } else {
+          let field = chunk;
+          let value = "";
+          const colonIndex = StringPrototypeIndexOf(chunk, ":");
+          if (colonIndex !== -1) {
+            field = StringPrototypeSlice(chunk, 0, colonIndex);
+            value = StringPrototypeSlice(chunk, colonIndex + 1);
+            if (StringPrototypeStartsWith(value, " ")) {
+              value = StringPrototypeSlice(value, 1);
+            }
+          }
+
+          switch (field) {
+            case "event": {
+              eventType = value;
+              break;
+            }
+            case "data": {
+              data += value + "\n";
+              break;
+            }
+            case "id": {
+              if (!StringPrototypeIncludes(value, "\0")) {
+                lastEventId = value;
+              }
+              break;
+            }
+            case "retry": {
+              const reconnectionTime = Number(value);
+              if (
+                !NumberIsNaN(reconnectionTime) &&
+                NumberIsFinite(reconnectionTime)
+              ) {
+                this.#reconnectionTime = reconnectionTime;
+              }
+              break;
+            }
+          }
+        }
+      }
+    } catch {
+      // The connection is reestablished below
+    }
+
+    this.#reestablishConnection();
+  }
+
+  #reestablishConnection() {
+    if (this.#readyState === CLOSED) {
+      return;
+    }
+    this.#readyState = CONNECTING;
+    this.dispatchEvent(new Event("error"));
+    this.#reconnectionTimerId = setTimeout(() => {
+      if (this.#readyState !== CONNECTING) {
+        return;
+      }
+      this.#loop();
+    }, this.#reconnectionTime);
+  }
+
+  #failConnection() {
+    if (this.#readyState !== CLOSED) {
+      this.#readyState = CLOSED;
+      this.dispatchEvent(new Event("error"));
+    }
+  }
+
+  [SymbolFor("Deno.privateCustomInspect")](inspect, inspectOptions) {
+    return inspect(
+      createFilteredInspectProxy({
+        object: this,
+        evaluate: ObjectPrototypeIsPrototypeOf(EventSourcePrototype, this),
+        keys: [
+          "readyState",
+          "url",
+          "withCredentials",
+          "onopen",
+          "onmessage",
+          "onerror",
+        ],
+      }),
+      inspectOptions,
+    );
+  }
+},reportError,function reportError(error) {
+  checkThis(this);
+  const prefix = "Failed to execute 'reportError'";
+  webidl.requiredArguments(arguments.length, 1, prefix);
+  reportException(error);
+},structuredClone,function structuredClone(value, options) {
+  const prefix = "Failed to execute 'structuredClone'";
+  webidl.requiredArguments(arguments.length, 1, prefix);
+  options = webidl.converters.StructuredSerializeOptions(
+    options,
+    prefix,
+    "Argument 2",
+  );
+  const messageData = serializeJsMessageData(value, options.transfer);
+  return deserializeJsMessageData(messageData)[0];
+},onunhandledrejection,,navigator,[object Object],alert,function alert(message = "Alert") {
+  if (!stdin.isTerminal()) {
+    return;
+  }
+
+  core.print(`${message} [Enter] `, false);
+
+  readLineFromStdinSync();
+},confirm,function confirm(message = "Confirm") {
+  if (!stdin.isTerminal()) {
+    return false;
+  }
+
+  core.print(`${message} [y/N] `, false);
+
+  const answer = readLineFromStdinSync();
+
+  return answer === "Y" || answer === "y";
+},prompt,function prompt(message = "Prompt", defaultValue) {
+  defaultValue ??= "";
+
+  if (!stdin.isTerminal()) {
+    return null;
+  }
+
+  return op_read_line_prompt(
+    `${message} `,
+    `${defaultValue}`,
+  );
+},localStorage,[object Object],sessionStorage,[object Object],name,,close,function windowClose() {
+  if (!windowIsClosing) {
+    windowIsClosing = true;
+    // Push a macrotask to exit after a promise resolve.
+    // This is not perfect, but should be fine for first pass.
+    PromisePrototypeThen(
+      PromiseResolve(),
+      () =>
+        FunctionPrototypeCall(timers.setTimeout, null, () => {
+          // This should be fine, since only Window/MainWorker has .close()
+          os.exit(0);
+        }, 0),
+    );
+  }
+},closed,false,onerror,,onload,,onbeforeunload,,onunload,,clear,function () { [native code] },clearInterval,function clearInterval(id = 0) {
+  checkThis(this);
+  id = webidl.converters.long(id);
+  core.cancelTimer(id);
+},clearTimeout,function clearTimeout(id = 0) {
+  checkThis(this);
+  id = webidl.converters.long(id);
+  core.cancelTimer(id);
+},performance,[object Performance],setInterval,function setInterval(callback, timeout = 0, ...args) {
+  checkThis(this);
+  if (typeof callback !== "function") {
+    const unboundCallback = webidl.converters.DOMString(callback);
+    callback = () => indirectEval(unboundCallback);
+  }
+  const unboundCallback = callback;
+  const asyncContext = getAsyncContext();
+  callback = () => {
+    const oldContext = getAsyncContext(asyncContext);
+    try {
+      setAsyncContext(asyncContext);
+      ReflectApply(unboundCallback, globalThis, args);
+    } finally {
+      setAsyncContext(oldContext);
+    }
+  };
+  timeout = webidl.converters.long(timeout);
+  return core.queueUserTimer(
+    core.getTimerDepth() + 1,
+    true,
+    timeout,
+    callback,
+  );
+},setTimeout,function setTimeout(callback, timeout = 0, ...args) {
+  checkThis(this);
+  // If callback is a string, replace it with a function that evals the string on every timeout
+  if (typeof callback !== "function") {
+    const unboundCallback = webidl.converters.DOMString(callback);
+    callback = () => indirectEval(unboundCallback);
+  }
+  const unboundCallback = callback;
+  const asyncContext = getAsyncContext();
+  callback = () => {
+    const oldContext = getAsyncContext();
+    try {
+      setAsyncContext(asyncContext);
+      ReflectApply(unboundCallback, globalThis, args);
+    } finally {
+      setAsyncContext(oldContext);
+    }
+  };
+  timeout = webidl.converters.long(timeout);
+  return core.queueUserTimer(
+    core.getTimerDepth() + 1,
+    false,
+    timeout,
+    callback,
+  );
+},window,[object Window],self,[object Window]

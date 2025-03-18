@@ -1,0 +1,34 @@
+{
+  "scriptId": "322",
+  "url": "file:///Users/krishnanandmishra/workspace/practice/test-coverage-practice/operations.js",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 317, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "add",
+      "ranges": [{ "startOffset": 19, "endOffset": 34, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "isEven",
+      "ranges": [
+        { "startOffset": 59, "endOffset": 132, "count": 2 },
+        { "startOffset": 91, "endOffset": 131, "count": 1 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "isValidVoter",
+      "ranges": [
+        { "startOffset": 163, "endOffset": 315, "count": 3 },
+        { "startOffset": 190, "endOffset": 218, "count": 1 },
+        { "startOffset": 218, "endOffset": 238, "count": 2 },
+        { "startOffset": 238, "endOffset": 313, "count": 1 }
+      ],
+      "isBlockCoverage": true
+    }
+  ]
+}

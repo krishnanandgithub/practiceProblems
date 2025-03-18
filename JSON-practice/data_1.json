@@ -1,0 +1,7 @@
+{
+  "name": "John",
+  "age": 23,
+  "address": { "pin code": 274604, "town": "Barahaj" },
+  "friends": ["Rohan", "Dev"],
+  "phone": 9876543210
+}

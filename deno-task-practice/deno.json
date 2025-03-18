@@ -1,0 +1,28 @@
+{
+  "tasks": {
+    "add1":"deno run add.js 1",
+    "add2":"deno run add.js 1 2",
+    "add3":"deno run add.js 1 2 3",
+    "add": {
+      "description": "Adding 4 numbers",
+      "command": "deno run add.js 1 2 3 4",
+      "dependencies": ["add1"]
+    }, 
+    "add-everything":{
+      "description": "Adding all functions",
+      "command": "echo hello world",
+      "dependencies": ["add1", "add2", "add3", "add"]
+    },
+    "md":"mkdir dir",
+    "cd":"cd dir",
+    "touch":"echo hello > file.txt",
+    "create":{
+      "description": "Creating dir, and file.txt with hello as content",
+      "command": "echo everything done!",
+      "dependencies": ["md", "cd", "touch"]
+    }   
+  },
+  "imports": {
+    "@std/assert": "jsr:@std/assert@1"
+  }
+}
