@@ -1,10 +1,10 @@
 {
   "scriptId": "319",
-  "url": "file:///Users/krishnanandmishra/workspace/practice/test-coverage-practice/utils.js",
+  "url": "file:///Users/krishnanandmishra/workspace/practice/test-coverage-practice/src/utils.js",
   "functions": [
     {
       "functionName": "",
-      "ranges": [{ "startOffset": 0, "endOffset": 104, "count": 1 }],
+      "ranges": [{ "startOffset": 0, "endOffset": 153, "count": 1 }],
       "isBlockCoverage": true
     },
     {
@@ -15,6 +15,11 @@
     {
       "functionName": "min",
       "ranges": [{ "startOffset": 84, "endOffset": 103, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "compact",
+      "ranges": [{ "startOffset": 128, "endOffset": 151, "count": 0 }],
       "isBlockCoverage": false
     }
   ]

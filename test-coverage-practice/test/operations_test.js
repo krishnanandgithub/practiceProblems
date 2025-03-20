@@ -23,11 +23,11 @@ describe("isValidVoter()", () => {
     assertEquals(isValidVoter(10), "below 18");
   });
 
-  it("should be true", () => {
-    assertEquals(isValidVoter(18), "just 18");
-  });
+  // it("should be true", () => {
+  //   assertEquals(isValidVoter(18), "just 18");
+  // });
 
-  it("should be true", () => {
-    assertEquals(isValidVoter(43), "above 18");
-  });
+  // it("should be true", () => {
+  //   assertEquals(isValidVoter(43), "above 18");
+  // });
 });

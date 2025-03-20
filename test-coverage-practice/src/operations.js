@@ -16,7 +16,7 @@ export const isValidVoter = (age) => {
   if (age === 18) {
     return "just 18";
   }
-  
+
   if (age > 18) {
     return "above 18";
   }
