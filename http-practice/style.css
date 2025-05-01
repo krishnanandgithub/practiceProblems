@@ -1,0 +1,16 @@
+.box {
+  background-color: lime  ;
+}
+
+input {
+  height: 30px;
+  width: 200px;
+  font-size: 25px;
+  font-family: sans-serif;
+}
+
+button {
+  display: block;
+  padding: 5px;
+  font-size: 20px;
+}
